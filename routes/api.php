@@ -19,7 +19,10 @@ use Illuminate\Support\Facades\Route;
 //                    The 4 end points
 // 
 // 
-Route::post('/post/add', [ContentController::class, 'createPost'])->middleware(['auth:sanctum', 'abilities:check-status,place-orders']);
+Route::middleware(['auth:sanctum', 'abilities:check-status,place-orders'])->group(function () {
+    Route::post('/post/add', [ContentController::class, 'createPost']);
+    Route::post('/beat/add', [ContentController::class, 'createBeat']);
+});
 // 
 // 
 //                    Authentication

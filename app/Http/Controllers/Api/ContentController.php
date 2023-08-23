@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Beat;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -39,6 +40,62 @@ class ContentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Post created successfully',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Create Beat
+     * @param Request $request
+     */
+    public function createBeat(Request $request)
+    {
+        try {
+            // validation
+            $validateBeat = Validator::make($request->all(), [
+                'slug' => 'required|unique:beats,slug',
+                'title' => 'required',
+                'premium_file' => 'mimes:mp4,txt,png,xls,pdf|max:2048',
+                'free_file' => 'required|mimes:mp4,txt,png,xls,pdf|max:2048',
+            ]);
+
+            // if incoming informations are wrong
+            if ($validateBeat->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Error during beat validation",
+                    'error' => $validateBeat->errors()
+                ], 401);
+            }
+
+
+            if (!$request->file()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "There is no free file in your request",
+                    'error' => $validateBeat->errors()
+                ], 401);
+            }
+
+            $beat = new Beat();
+            if ($request->file('premium_file')) {
+                $name = time() . '_premium_file.' . $request->file('premium_file')->getClientOriginalExtension();
+                $beat->premium_file = $request->file('premium_file')->storeAs('premium_file', $name, 'private');
+            }
+            $name = time() . '_free_file.' . $request->file('free_file')->getClientOriginalExtension();
+            $beat->free_file = $request->file('free_file')->storeAs('free_file', $name, 'public');
+            $beat->title = $request->title;
+            $beat->slug = $request->slug;
+            $beat->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Beat created successfully',
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
