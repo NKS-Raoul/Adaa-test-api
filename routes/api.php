@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\ContentController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,7 +14,22 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// 
+// 
+//                    The 4 end points
+// 
+// 
+Route::middleware(['auth:sanctum', 'abilities:check-status,place-orders'])->group(function () {
+    Route::post('/post/add', [ContentController::class, 'createPost']);
+    Route::post('/beat/add', [ContentController::class, 'createBeat']);
+    Route::post('/post/add-like', [ContentController::class, 'addPostLike']);
+    Route::post('/beat/add-like', [ContentController::class, 'addBeatLike']);
 });
+// 
+// 
+//                    Authentication
+// 
+// 
+Route::post('/auth/login', [UserController::class, 'loginUser']);
+Route::post('/auth/register', [UserController::class, 'createUser']);
+Route::delete('/auth/logout', [UserController::class, 'logOut']);
