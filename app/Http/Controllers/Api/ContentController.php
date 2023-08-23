@@ -107,16 +107,54 @@ class ContentController extends Controller
     }
 
     /**
-     * Add Beat's like
+     * Add Post's like
      * @param Request $request
      */
     public function addPostLike(Request $request)
     {
         try {
             // validation
-            $validateBeat = Validator::make($request->all(), [
+            $validatePost = Validator::make($request->all(), [
                 'user_id' => 'required',
                 'post_id' => 'required',
+            ]);
+
+            // if incoming informations are wrong
+            if ($validatePost->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Error during post's like validation",
+                    'error' => $validatePost->errors()
+                ], 401);
+            }
+
+            $like = new Like(['user_id' => $request->user_id]);
+            $post = Post::find($request->post_id);
+            $post->likes()->save($like);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Like added successfully',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Add Beat's like
+     * @param Request $request
+     */
+    public function addBeatLike(Request $request)
+    {
+        try {
+            // validation
+            $validateBeat = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'beat_id' => 'required',
             ]);
 
             // if incoming informations are wrong
@@ -129,12 +167,12 @@ class ContentController extends Controller
             }
 
             $like = new Like(['user_id' => $request->user_id]);
-            $post = Post::find($request->post_id);
-            $post->likes()->save($like);
+            $beat = Beat::find($request->beat_id);
+            $beat->likes()->save($like);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Beat created successfully',
+                'message' => 'Like added successfully',
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
