@@ -20,4 +20,12 @@ class Post extends Model
         'slug',
         'content',
     ];
+
+    /**
+     * Get all of the Post's likes.
+     */
+    public function likes()
+    {
+        return $this->morphMany(Like::class, 'likeable');
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Beat;
+use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -92,6 +93,44 @@ class ContentController extends Controller
             $beat->title = $request->title;
             $beat->slug = $request->slug;
             $beat->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Beat created successfully',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Add Beat's like
+     * @param Request $request
+     */
+    public function addPostLike(Request $request)
+    {
+        try {
+            // validation
+            $validateBeat = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'post_id' => 'required',
+            ]);
+
+            // if incoming informations are wrong
+            if ($validateBeat->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Error during beat's like validation",
+                    'error' => $validateBeat->errors()
+                ], 401);
+            }
+
+            $like = new Like(['user_id' => $request->user_id]);
+            $post = Post::find($request->post_id);
+            $post->likes()->save($like);
 
             return response()->json([
                 'success' => true,

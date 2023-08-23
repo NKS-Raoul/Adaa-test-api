@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum', 'abilities:check-status,place-orders'])->group(function () {
     Route::post('/post/add', [ContentController::class, 'createPost']);
     Route::post('/beat/add', [ContentController::class, 'createBeat']);
+    Route::post('/post/add-like', [ContentController::class, 'addPostLike']);
+    Route::post('/beat/add-like', [ContentController::class, 'addBeatLike']);
 });
 // 
 // 

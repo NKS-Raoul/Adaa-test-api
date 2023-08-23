@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Laravel\Sanctum\HasApiTokens;
 
-class Beat extends Model
+class Like extends Model
 {
 
     use HasApiTokens, HasFactory;
@@ -17,17 +18,14 @@ class Beat extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'slug',
-        'title',
-        'premium_file',
-        'free_file',
+        'user_id',
     ];
 
     /**
-     * Get all of the Beat's likes.
+     * Get all of the models that own likes.
      */
-    public function likes()
+    public function likeable(): MorphTo
     {
-        return $this->morphMany(Like::class, 'likeable');
+        return $this->morphTo();
     }
 }
