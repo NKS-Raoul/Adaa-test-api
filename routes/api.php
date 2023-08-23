@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,7 +14,16 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-Route::get('/', ContentController::class);
+// 
+// 
+//                    The 4 end points
+// 
+// 
+Route::post('/post/add', [ContentController::class, 'createPost'])->middleware(['auth:sanctum', 'abilities:check-status,place-orders']);
+// 
+// 
+//                    Authentication
+// 
+// 
 Route::post('/auth/login', [UserController::class, 'loginUser']);
 Route::post('/auth/register', [UserController::class, 'createUser']);
