@@ -95,4 +95,36 @@ class UserController extends Controller
             ]);
         }
     }
+
+    public function logOut(Request $request)
+    {
+        try {
+            // validation
+            $validateUser = Validator::make($request->all(), [
+                'user_id' => 'required',
+            ]);
+
+            // if incoming informations are wrong
+            if ($validateUser->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Error during validation",
+                    'error' => $validateUser->errors()
+                ], 401);
+            }
+
+            $user = User::find($request->user_id);
+            $user->tokens()->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User logged out successfully',
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
 }
